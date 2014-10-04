@@ -24,6 +24,7 @@ E_PULSE = 0.00005
 E_DELAY = 0.00005
 
 def main():
+  GPIO.setwarnings(False)
 
   GPIO.setmode(GPIO.BCM)
   GPIO.setup(LCD_E, GPIO.OUT)
@@ -39,7 +40,12 @@ def main():
   loading() #show loading
 
   #yahoo_result = pywapi.get_weather_from_yahoo('ROXX0003')
-  get_weather("Bucharest", "ROXX0003")
+  #updateInterval = 1
+
+  while(True):
+    loading() #show loading
+    get_weather("Bucharest", "ROXX0003")
+    time.sleep(200)
 
 
 def get_weather(location, code):
@@ -54,8 +60,8 @@ def get_weather(location, code):
   elif conditionCode in [31,32,33,34,44,29,30,44]:
     light_leds(2) #Vremea este buna
 
-
-  while(True):
+  showTime = 0
+  while(showTime!=5):
     temp_display(location,yahoo_result)
     time.sleep(10)
     today_weather_text_display(yahoo_result)
@@ -64,33 +70,34 @@ def get_weather(location, code):
     time.sleep(10)
     sunset_sunrise_display(yahoo_result)
     time.sleep(10)
+    showTime = showTime + 1
 
 
 def temp_display(location,yahoo_result):
-	line_1 = location
-	line_2 = "Temp:" + yahoo_result['condition']['temp'] + "C"
-	led_display(line_1,line_2,2)
+  line_1 = location
+  line_2 = "Temp:" + yahoo_result['condition']['temp'] + "C"
+  led_display(line_1,line_2,2)
 
 def today_weather_text_display(yahoo_result):
-	line_1 = "Today"
-	line_2 = yahoo_result['forecasts'][0]['text']
-	led_display(line_1,line_2,2)
+  line_1 = "Today"
+  line_2 = yahoo_result['forecasts'][0]['text']
+  led_display(line_1,line_2,2)
 
 def low_high_temp_display(yahoo_result):
-	line_1 = "Low:" + yahoo_result['forecasts'][0]['low'] + "C"
-	line_2 = "Max:" +  yahoo_result['forecasts'][0]['high'] + "C"
-	led_display(line_1,line_2,1)
+  line_1 = "Low:" + yahoo_result['forecasts'][0]['low'] + "C"
+  line_2 = "Max:" +  yahoo_result['forecasts'][0]['high'] + "C"
+  led_display(line_1,line_2,1)
 
 def sunset_sunrise_display(yahoo_result):
-	sunrise = yahoo_result['astronomy']['sunrise']
-	sunset = yahoo_result['astronomy']['sunset']
-	line_1 = "Sunrise: " + sunrise
-	line_2 = "Sunset: " + sunset
-	led_display(line_1,line_2,2)
+  sunrise = yahoo_result['astronomy']['sunrise']
+  sunset = yahoo_result['astronomy']['sunset']
+  line_1 = "Sunrise: " + sunrise
+  line_2 = "Sunset: " + sunset
+  led_display(line_1,line_2,2)
 
 
 def loading():
-	led_display("Loading...","",2)
+  led_display("Loading...","",2)
  
 def light_leds(led):
   if led==1: #blue
